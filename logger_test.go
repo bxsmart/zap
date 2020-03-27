@@ -174,6 +174,8 @@ func TestLoggerLeveledMethods(t *testing.T) {
 			method        func(string, ...Field)
 			expectedLevel zapcore.Level
 		}{
+			{logger.Verbose, VerboseLevel},
+			{logger.Trace, TraceLevel},
 			{logger.Debug, DebugLevel},
 			{logger.Info, InfoLevel},
 			{logger.Warn, WarnLevel},

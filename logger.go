@@ -172,6 +172,22 @@ func (log *Logger) Check(lvl zapcore.Level, msg string) *zapcore.CheckedEntry {
 	return log.check(lvl, msg)
 }
 
+// Trace logs a message at DebugLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+func (log *Logger) Verbose(msg string, fields ...Field) {
+	if ce := log.check(VerboseLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Trace logs a message at DebugLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+func (log *Logger) Trace(msg string, fields ...Field) {
+	if ce := log.check(TraceLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
 // Debug logs a message at DebugLevel. The message includes any fields passed
 // at the log site, as well as any fields accumulated on the logger.
 func (log *Logger) Debug(msg string, fields ...Field) {

@@ -92,6 +92,16 @@ func (s *SugaredLogger) With(args ...interface{}) *SugaredLogger {
 	return &SugaredLogger{base: s.base.With(s.sweetenFields(args)...)}
 }
 
+// Trace uses fmt.Sprint to construct and log a message.
+func (s *SugaredLogger) Verbose(args ...interface{}) {
+	s.log(VerboseLevel, "", args, nil)
+}
+
+// Trace uses fmt.Sprint to construct and log a message.
+func (s *SugaredLogger) Trace(args ...interface{}) {
+	s.log(TraceLevel, "", args, nil)
+}
+
 // Debug uses fmt.Sprint to construct and log a message.
 func (s *SugaredLogger) Debug(args ...interface{}) {
 	s.log(DebugLevel, "", args, nil)
@@ -126,6 +136,16 @@ func (s *SugaredLogger) Panic(args ...interface{}) {
 // Fatal uses fmt.Sprint to construct and log a message, then calls os.Exit.
 func (s *SugaredLogger) Fatal(args ...interface{}) {
 	s.log(FatalLevel, "", args, nil)
+}
+
+// Verbosef uses fmt.Sprintf to log a templated message.
+func (s *SugaredLogger) Verbosef(template string, args ...interface{}) {
+	s.log(VerboseLevel, template, args, nil)
+}
+
+// Tracef uses fmt.Sprintf to log a templated message.
+func (s *SugaredLogger) Tracef(template string, args ...interface{}) {
+	s.log(TraceLevel, template, args, nil)
 }
 
 // Debugf uses fmt.Sprintf to log a templated message.
@@ -164,6 +184,13 @@ func (s *SugaredLogger) Fatalf(template string, args ...interface{}) {
 	s.log(FatalLevel, template, args, nil)
 }
 
+func (s *SugaredLogger) Verbosew(msg string, keysAndValues ...interface{}) {
+	s.log(VerboseLevel, msg, nil, keysAndValues)
+}
+
+func (s *SugaredLogger) Tracew(msg string, keysAndValues ...interface{}) {
+	s.log(TraceLevel, msg, nil, keysAndValues)
+}
 // Debugw logs a message with some additional context. The variadic key-value
 // pairs are treated as they are in With.
 //
