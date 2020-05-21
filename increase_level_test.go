@@ -29,10 +29,13 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 )
 
-func newLoggedEntry(level zapcore.Level, msg string) observer.LoggedEntry {
+func newLoggedEntry(level zapcore.Level, msg string, fields ...zapcore.Field) observer.LoggedEntry {
+	if len(fields) == 0 {
+		fields = []zapcore.Field{}
+	}
 	return observer.LoggedEntry{
 		Entry:   zapcore.Entry{Level: level, Message: msg},
-		Context: []zapcore.Field{},
+		Context: fields,
 	}
 }
 
@@ -55,7 +58,7 @@ func TestIncreaseLevelTryDecrease(t *testing.T) {
 			newLoggedEntry(ErrorLevel, "increase level error log"),
 		}, logs.AllUntimed(), "unexpected logs")
 		assert.Equal(t,
-			`failed to IncreaseLevel: invalid increase level, as level "info" is allowed by increased level, but not by existing core`,
+			"failed to IncreaseLevel: invalid increase level, as level \"info\" is allowed by increased level, but not by existing core\n",
 			errorOut.String(),
 			"unexpected error output",
 		)
@@ -75,9 +78,15 @@ func TestIncreaseLevel(t *testing.T) {
 		errorLogger.Warn("ignored warn log")
 		errorLogger.Error("increase level error log")
 
+		withFields := errorLogger.With(String("k", "v"))
+		withFields.Debug("ignored debug log with fields")
+		withFields.Warn("ignored warn log with fields")
+		withFields.Error("increase level error log with fields")
+
 		assert.Equal(t, []observer.LoggedEntry{
 			newLoggedEntry(WarnLevel, "original warn log"),
 			newLoggedEntry(ErrorLevel, "increase level error log"),
+			newLoggedEntry(ErrorLevel, "increase level error log with fields", String("k", "v")),
 		}, logs.AllUntimed(), "unexpected logs")
 
 		assert.Empty(t, errorOut.String(), "expect no error output")
